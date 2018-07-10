@@ -7,7 +7,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
-public class AdressModel<T> extends DynGenArray implements TableModel {
+public class AdressModel extends DynGenArray<KontaktPrivat> implements TableModel {
 
 	private List<TableModelListener> tableListener = new ArrayList<TableModelListener>();
 	public int length;
@@ -16,17 +16,22 @@ public class AdressModel<T> extends DynGenArray implements TableModel {
 	public void add(int pos, KontaktPrivat obj) {
 		this.put(pos, obj);
 		for (TableModelListener l : tableListener) {
-			l.tableChanged(new TableModelEvent(this)); // this ==> es hat sich irgendawas geändert
+			l.tableChanged(new TableModelEvent(this)); // this ==> es hat sich irgendawas geÃ¤ndert
 		}
 	}
 
 	public KontaktPrivat getA(int index) {
-		KontaktPrivat kont = new KontaktPrivat(index);
+		KontaktPrivat kont;
+		//kont = new KontaktPrivat(index); // FIXME Macht keinen Sinn
+		/*
+		 * In der naechsten Zeile wird kont wiser ueberschrieben und das eben erzeugte Objekt
+		 * wird direkt wieder gekillt.
+		 */
 		kont = (KontaktPrivat) this.get(index);
 		return kont;
 	}
 
-	// Welcher Datentyp. Wichtig für Sortierung der Spalten
+	// Welcher Datentyp. Wichtig fÃ¼r Sortierung der Spalten
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
 		switch (columnIndex) {
@@ -64,7 +69,7 @@ public class AdressModel<T> extends DynGenArray implements TableModel {
 		case 3:
 			return "Vorname";
 		case 4:
-			return "Staatsangehörigkeit";
+			return "StaatsangehÃ¶rigkeit";
 		default:
 			return null;
 
@@ -120,7 +125,7 @@ public class AdressModel<T> extends DynGenArray implements TableModel {
 
 	@Override
 	public void setValueAt(Object arg0, int rowIndex, int columnIndex) {
-		this.edit(rowIndex, arg0);
+		this.edit(rowIndex, (KontaktPrivat) arg0);
 
 	}
 
@@ -128,5 +133,6 @@ public class AdressModel<T> extends DynGenArray implements TableModel {
 	public AdressModel(int capacity) {
 		super(capacity);
 	}
+
 
 }

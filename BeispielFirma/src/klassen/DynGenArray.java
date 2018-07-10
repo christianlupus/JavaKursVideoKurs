@@ -18,7 +18,7 @@ public class DynGenArray<T> {
 	public void put(int position, T value) {
 		if (position >= data.length) {
 			int newSize = 2 * data.length;
-			if (position >= newSize)
+			while (position >= newSize)
 				newSize = 2 * position;
 			T[] newData = (T[]) new Object[newSize];
 			System.arraycopy(data, 0, newData, 0, data.length);

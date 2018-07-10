@@ -63,9 +63,9 @@ public class FMFrame extends JFrame {
 	private JPanel pnlAdd;
 	private JPanel pnlLeft;
 
-	private AdressModel<KontaktPrivat> model;
+	private AdressModel model;
 
-	public FMFrame(AdressModel<KontaktPrivat> model) {
+	public FMFrame(AdressModel model) {
 		this.model = model;
 		this.setTitle("Adressen Manager");
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -179,7 +179,7 @@ public class FMFrame extends JFrame {
 		lblKontaktId = new JLabel("KontaktId");
 		lblVorname = new JLabel("Vorname");
 		lblNachname = new JLabel("Nachname");
-		lblStaat = new JLabel("Staatsangehörigkeit");
+		lblStaat = new JLabel("Staatsangehï¿½rigkeit");
 		lblAnzKontakte = new JLabel("Anzahl Kontakte");
 
 		fldPos = new JTextField();
@@ -194,13 +194,13 @@ public class FMFrame extends JFrame {
 		btnNeu = new JButton("Neu");
 		btnNeu.setEnabled(true);
 
-		btnAdd = new JButton("Hinzufügen");
+		btnAdd = new JButton("Hinzufï¿½gen");
 		btnAdd.setEnabled(false);
 
 		btnEdit = new JButton("Editieren");
 		btnEdit.setEnabled(false);
 
-		btnDelete = new JButton("Löschen");
+		btnDelete = new JButton("Lï¿½schen");
 		btnDelete.setEnabled(false);
 
 		pnlLeft = new JPanel();
@@ -264,13 +264,13 @@ public class FMFrame extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			System.out.println("Zeile wird gelöscht: "
+			System.out.println("Zeile wird gelÃ¶scht: "
 					+ Integer.parseInt(fldPos.getText()));
 
 			KontaktPrivat kont = null;
 			kont = new KontaktPrivat(0);
 			model.setValueAt(kont, Integer.parseInt(fldPos.getText()), 0);
-			AdressModel<KontaktPrivat> hilf = new AdressModel<KontaktPrivat>(1);
+			AdressModel hilf = new AdressModel(1);
 			int neuPos=0;
 			for (int i = 1; i<=model.getElementCount(); i++) {
 				if (model.getA(i).getKontaktId()>0){			
@@ -280,7 +280,7 @@ public class FMFrame extends JFrame {
 
 			}
 			model=hilf;
-            System.out.println("Länge"+model.getRowCount());
+            System.out.println("LÃ¤nge"+model.getRowCount());
 	
 			for (int i = 1; i<=model.getRowCount(); i++) {
 				System.out.println(model.getA(i).getKontaktId()+"  "+model.getA(i).getNachname());
@@ -323,5 +323,11 @@ public class FMFrame extends JFrame {
 			btnEdit.setEnabled(true);
 			btnDelete.setEnabled(true);
 		}
+	}
+	
+	public static void main(String[] args) {
+		FMFrame f = new FMFrame(new AdressModel(5));
+		f.pack();
+		f.setVisible(true);
 	}
 }

@@ -35,8 +35,7 @@ public class AdressGui extends JApplet {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				AdressModel<KontaktPrivat> model = new AdressModel<KontaktPrivat>(
-						1);
+				AdressModel model = new AdressModel(1);
 
 				JFrame frame = new FMFrame(model);
 				frame.setVisible(true);
