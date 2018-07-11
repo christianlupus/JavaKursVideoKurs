@@ -25,18 +25,20 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 
-import klassen.AdressModel;
+import klassen.KontaktModel;
 import klassen.KontaktPrivat;
 
 public class FMFrame extends JFrame {
 
+	private static final long serialVersionUID = 4012235250957320310L;
+	
 	private JLabel lblHeader;
 	private JLabel lblPos;
 	private JLabel lblKontaktId;
@@ -62,11 +64,10 @@ public class FMFrame extends JFrame {
 	private JProgressBar progBar;
 	private JPanel pnlAdd;
 	private JPanel pnlLeft;
+	
+	private KontaktModel model;
 
-	private AdressModel model;
-
-	public FMFrame(AdressModel model) {
-		this.model = model;
+	public FMFrame() {
 		this.setTitle("Adressen Manager");
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
@@ -98,7 +99,7 @@ public class FMFrame extends JFrame {
 		btnAdd.addActionListener(new AddKontaktAction());
 		btnEdit.addActionListener(new EditKontaktAction());
 		btnDelete.addActionListener(new DeleteKontaktAction());
-		fldNachname.addCaretListener(new PflichtfeldListener());
+		fldNachname.getDocument().addDocumentListener(new PflichtfeldListener());
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getSelectionModel().addListSelectionListener(
 				new MySelectionListener(table));
@@ -165,6 +166,7 @@ public class FMFrame extends JFrame {
 		progBar = new JProgressBar(0, 100);
 		progBar.setPreferredSize(new Dimension(0, 30));
 
+		model = new KontaktModel();
 		table = new JTable(model);
 		table.setAutoCreateRowSorter(true);
         
@@ -179,7 +181,7 @@ public class FMFrame extends JFrame {
 		lblKontaktId = new JLabel("KontaktId");
 		lblVorname = new JLabel("Vorname");
 		lblNachname = new JLabel("Nachname");
-		lblStaat = new JLabel("Staatsangeh�rigkeit");
+		lblStaat = new JLabel("Staatsangehörigkeit");
 		lblAnzKontakte = new JLabel("Anzahl Kontakte");
 
 		fldPos = new JTextField();
@@ -194,27 +196,55 @@ public class FMFrame extends JFrame {
 		btnNeu = new JButton("Neu");
 		btnNeu.setEnabled(true);
 
-		btnAdd = new JButton("Hinzuf�gen");
+		btnAdd = new JButton("Hinzufügen");
 		btnAdd.setEnabled(false);
 
 		btnEdit = new JButton("Editieren");
 		btnEdit.setEnabled(false);
 
-		btnDelete = new JButton("L�schen");
+		btnDelete = new JButton("Löschen");
 		btnDelete.setEnabled(false);
 
 		pnlLeft = new JPanel();
 		pnlLeft.setLayout(new BoxLayout(pnlLeft, BoxLayout.PAGE_AXIS));
 
 	}
+	
+	private void updateCounter()
+	{
+		fldAnzKontakte.setText(String.valueOf(model.getSize()));
+	}
 
-	private class PflichtfeldListener implements CaretListener {
+	private class PflichtfeldListener implements DocumentListener {
+
+		private void update(DocumentEvent e) {
+			Document d = e.getDocument();
+			int len = d.getLength();
+			String text = "";
+			try {
+				text = d.getText(0, len);
+			} catch (BadLocationException e1) {
+				// Something really nasty has happened.
+				e1.printStackTrace();
+				btnAdd.setEnabled(false);
+				return;
+			}
+			btnAdd.setEnabled(!text.trim().isEmpty());
+		}
 
 		@Override
-		public void caretUpdate(CaretEvent e) {
-			JTextField fld = (JTextField) e.getSource();
-			String text = fld.getText();
-			btnAdd.setEnabled(!text.trim().isEmpty());
+		public void changedUpdate(DocumentEvent e) {
+			update(e);
+		}
+
+		@Override
+		public void insertUpdate(DocumentEvent e) {
+			update(e);
+		}
+
+		@Override
+		public void removeUpdate(DocumentEvent e) {
+			update(e);
 		}
 	}
 
@@ -228,19 +258,25 @@ public class FMFrame extends JFrame {
 
 		@Override
 		public void valueChanged(ListSelectionEvent e) {
-			if (!e.getValueIsAdjusting()) {
-				 System.out.println(table.getValueAt(table.getSelectedRow(),1));
-				fldPos.setText(String.valueOf(table.getValueAt(
-						table.getSelectedRow(), 0)));
-				fldKontaktId.setText(String.valueOf(table.getValueAt(
-						table.getSelectedRow(), 1)));
-				fldVorname.setText((String) table.getValueAt(
-						table.getSelectedRow(), 3));
-				fldNachname.setText((String) table.getValueAt(
-						table.getSelectedRow(), 2));
-				fldStaat.setText((String) table.getValueAt(
-						table.getSelectedRow(), 4));
-			}
+			boolean selected = (table.getSelectedRow() != -1);
+			btnDelete.setEnabled(selected);
+			btnEdit.setEnabled(selected);
+			
+			if(selected)
+				readData();
+		}
+		
+		private void readData()
+		{
+			int row = table.getSelectedRow();
+			fldPos.setText(String.valueOf(row));
+			
+			KontaktPrivat k = model.get(row);
+			
+			fldKontaktId.setText(String.valueOf(k.getKontaktId()));
+			fldVorname.setText(k.getVorname());
+			fldNachname.setText(k.getNachname());
+			fldStaat.setText(k.getStaatsangehoerigkeit());
 		}
 	}
 
@@ -253,10 +289,6 @@ public class FMFrame extends JFrame {
 			fldVorname.setText(null);
 			fldNachname.setText(null);
 			fldStaat.setText(null);
-
-			btnAdd.setEnabled(false);
-			btnEdit.setEnabled(false);
-
 		}
 	}
 
@@ -265,29 +297,16 @@ public class FMFrame extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			System.out.println("Zeile wird gelöscht: "
-					+ Integer.parseInt(fldPos.getText()));
+					+ table.getSelectedRow());
 
-			KontaktPrivat kont = null;
-			kont = new KontaktPrivat(0);
-			model.setValueAt(kont, Integer.parseInt(fldPos.getText()), 0);
-			AdressModel hilf = new AdressModel(1);
-			int neuPos=0;
-			for (int i = 1; i<=model.getElementCount(); i++) {
-				if (model.getA(i).getKontaktId()>0){			
-				++neuPos;
-				hilf.put(neuPos, model.get(i));
-				}
-
-			}
-			model=hilf;
-            System.out.println("Länge"+model.getRowCount());
-	
-			for (int i = 1; i<=model.getRowCount(); i++) {
-				System.out.println(model.getA(i).getKontaktId()+"  "+model.getA(i).getNachname());
+			if(table.getSelectedRow() == -1)
+			{
+				System.out.println("No row was selected. Ignoring.");
+				return;
 			}
 			
-			table.repaint();
-
+			model.delete(table.getSelectedRow());
+			updateCounter();
 		}
 	}
 
@@ -295,14 +314,22 @@ public class FMFrame extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			KontaktPrivat kont = null;
-			kont = new KontaktPrivat(Integer.parseInt(fldKontaktId.getText()));
+			
+			int row = table.getSelectedRow();
+			if(row == -1)
+			{
+				System.out.println("No row was selected. Ignoring.");
+				return;
+			}
+			
+			KontaktPrivat kont = new KontaktPrivat(Integer.parseInt(fldKontaktId.getText()));
 			System.out.println("--->   "
 					+ Integer.parseInt(fldKontaktId.getText()));
 			kont.setVorname(fldVorname.getText());
 			kont.setNachname(fldNachname.getText());
 			kont.setStaatsangehoerigkeit(fldStaat.getText());
-			model.setValueAt(kont, Integer.parseInt(fldPos.getText()), 0);
+			
+			model.edit(row, kont);
 		}
 	}
 
@@ -310,23 +337,18 @@ public class FMFrame extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			KontaktPrivat kont = null;
-			kont = new KontaktPrivat(Integer.parseInt(fldKontaktId.getText()));
-			fldPos.setText(String.valueOf(model.getElementCount()+1));
+			KontaktPrivat kont = new KontaktPrivat(Integer.parseInt(fldKontaktId.getText()));
 			kont.setVorname(fldVorname.getText());
 			kont.setNachname(fldNachname.getText());
 			kont.setStaatsangehoerigkeit(fldStaat.getText());
-			//model.add(model.getElementCount()+1, kont);
-			model.add(model.getRowCount()+1,kont);
-			System.out.println("Aktueller Kontakt: " + (model.getElementCount()));
-			fldAnzKontakte.setText(String.valueOf(model.getElementCount()));
-			btnEdit.setEnabled(true);
-			btnDelete.setEnabled(true);
+			
+			model.add(kont);
+			updateCounter();
 		}
 	}
 	
 	public static void main(String[] args) {
-		FMFrame f = new FMFrame(new AdressModel(5));
+		FMFrame f = new FMFrame();
 		f.pack();
 		f.setVisible(true);
 	}

@@ -37,7 +37,7 @@ public class AdressGui extends JApplet {
 				}
 				AdressModel model = new AdressModel(1);
 
-				JFrame frame = new FMFrame(model);
+				JFrame frame = new FMFrame();
 				frame.setVisible(true);
 
 			}
