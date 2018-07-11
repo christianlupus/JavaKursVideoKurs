@@ -20,11 +20,15 @@ public class HashSetExample {
 		System.out.println("Anzahl Einträge: " + set.size());
 		System.out.println("---");
 
+		Set<Kontakt> del = new HashSet<Kontakt>();
+
 		for (Kontakt kont : set) {
 			if (kont.getKontaktId() == 104) { // ????
-				set.remove(kont);
+				del.add(kont);
 			}
 		}
+
+		set.removeAll(del);
 
 		for (Kontakt kont : set) {
 			System.out.println("[" + kont.getKontaktId() + "]"
