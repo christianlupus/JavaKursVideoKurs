@@ -1,6 +1,7 @@
 package programme;
 
 import java.util.HashSet;
+import java.util.Iterator;
 
 import klassen.Kontakt;
 
@@ -20,9 +21,11 @@ public class HashSetExample {
 		System.out.println("Anzahl Einträge: " + set.size());
 		System.out.println("---");
 
-		for (Kontakt kont : set) {
-			if (kont.getKontaktId() == 104) { // ????
-				set.remove(kont);
+		Iterator<Kontakt> it = set.iterator();
+		while(it.hasNext())
+		{
+			if (it.next().getKontaktId() == 104) {
+				it.remove();
 			}
 		}
 
