@@ -1,13 +1,8 @@
 package klassen;
 
 public class Kontakt {
-	private int pos = 0;
 	private String vorname = null;
 	private String nachname = null;
-
-	public int getPos() {
-		return pos;
-	}
 
 	public String getVorname() {
 		return vorname;
@@ -15,10 +10,6 @@ public class Kontakt {
 
 	public String getNachname() {
 		return nachname;
-	}
-
-	public void setPos(int pos) {
-		this.pos = pos;
 	}
 
 	public void setVorname(String vorname) {
@@ -29,8 +20,7 @@ public class Kontakt {
 		this.nachname = nachname;
 	}
 
-	public Kontakt(int pos, String vorname, String nachname) {
-		this.setPos(pos);
+	public Kontakt(String vorname, String nachname) {
 		this.setVorname(vorname);
 		this.setNachname(nachname);
 	}

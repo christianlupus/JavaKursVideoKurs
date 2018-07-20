@@ -25,8 +25,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -174,10 +172,10 @@ public class FMFrame extends JFrame {
 		btnNeu.setEnabled(true);
 
 		btnEdit = new JButton("Editieren");
-		btnEdit.setEnabled(true);
+		btnEdit.setEnabled(false);
 
-		btnDelete = new JButton("Löschen");
-		btnDelete.setEnabled(true);
+		btnDelete = new JButton("Loeschen");
+		btnDelete.setEnabled(false);
 
 		pnlLeft = new JPanel();
 		pnlLeft.setLayout(new BoxLayout(pnlLeft, BoxLayout.PAGE_AXIS));
@@ -195,16 +193,25 @@ public class FMFrame extends JFrame {
 		@Override
 		public void valueChanged(ListSelectionEvent e) {
 			if (!e.getValueIsAdjusting()) {
-				fldPos.setText(table.getValueAt(table.getSelectedRow(), 0)
-						.toString());
-				fldVorname.setText(table.getValueAt(table.getSelectedRow(), 1)
-						.toString());
-				fldNachname.setText(table.getValueAt(table.getSelectedRow(), 2)
-						.toString());
-				model.fireTableRowsUpdated(table.getSelectedRow(), 0);
-				model.fireTableRowsUpdated(table.getSelectedRow(), 1);
-				model.fireTableRowsUpdated(table.getSelectedRow(), 2);
-
+				if(table.getSelectedRow() != -1)
+				{
+					fldPos.setText(table.getValueAt(table.getSelectedRow(), 0)
+							.toString());
+					fldVorname.setText(table.getValueAt(table.getSelectedRow(), 1)
+							.toString());
+					fldNachname.setText(table.getValueAt(table.getSelectedRow(), 2)
+							.toString());
+					/*model.fireTableRowsUpdated(table.getSelectedRow(), 0);
+					model.fireTableRowsUpdated(table.getSelectedRow(), 1);
+					model.fireTableRowsUpdated(table.getSelectedRow(), 2);*/
+					btnDelete.setEnabled(true);
+					btnEdit.setEnabled(true);
+				}
+				else
+				{
+					btnDelete.setEnabled(false);
+					btnEdit.setEnabled(false);
+				}
 			}
 		}
 	}
@@ -213,13 +220,11 @@ public class FMFrame extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			model.incSlot();
-			model.data.add(new Kontakt(model.getSlot(), fldVorname.getText(),
+			model.data.add(new Kontakt(fldVorname.getText(),
 					fldNachname.getText()));
-			fldPos.setText(String.valueOf(model.getSlot()));
-			fldAnzKontakte.setText(String.valueOf(model.getSlot()));
 
 			model.fireTableDataChanged();
+			updateCount();
 		}
 
 	}
@@ -228,10 +233,29 @@ public class FMFrame extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int row = Integer.parseInt(fldPos.getText());
-			model.setValueAt(Integer.parseInt(fldPos.getText()), row - 1, 0);
-			model.setValueAt(fldVorname.getText(), row - 1, 1);
-			model.setValueAt(fldNachname.getText(), row - 1, 2);
+			
+			int row = table.getSelectedRow();
+			
+			// Da muss ein Wert >-1 stehen, sonst ging was richtig schief.
+			assert(row != -1);
+			
+			/*
+			 * Der Teil geht vielleicht ein wenig eleganter, wenn man die Kapselung
+			 * der Objekte noch mit nutzt:
+			 * Du koenntest dir nur den Kontakt zurueckgeben lassen. Dann kannst du darin
+			 * Aenderungen machen, ohne, dass du die Struktur der Tabelle (welche Spalte steht wo?)
+			 * im Hinterkopf haben musst. Das wird im Modell unter der Hand geloest.
+			 * 
+			 * Ich habe das mal soweit vogesehen.
+			 */
+			/*model.setValueAt(fldVorname.getText(), row - 1, 1);
+			model.setValueAt(fldNachname.getText(), row - 1, 2);*/
+			
+			Kontakt k = model.getRow(row);
+			k.setVorname(fldVorname.getText());
+			k.setNachname(fldNachname.getText());
+			
+			// Man koennte auch mit updateRow arbeiten...
 			model.fireTableDataChanged();
 		}
 	}
@@ -240,10 +264,18 @@ public class FMFrame extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int row = Integer.parseInt(fldPos.getText());
-			model.data.remove(row - 1);
-			fldAnzKontakte.setText(String.valueOf(model.getSlot()));
-			model.fireTableDataChanged();
+			int row = table.getSelectedRow();
+			
+			// Da muss ein Wert >-1 stehen, sonst ging was richtig schief.
+			assert(row != -1);
+			
+			model.remove(row);
+			updateCount();
 		}
+	}
+	
+	private void updateCount()
+	{
+		fldAnzKontakte.setText(String.valueOf(model.getRowCount()));
 	}
 }
