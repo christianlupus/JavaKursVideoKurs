@@ -31,7 +31,7 @@ import javax.swing.event.ListSelectionListener;
 import klassen.AdressModel;
 import klassen.Kontakt;
 
-public class FMFrame extends JFrame {
+public class FMFrame extends JFrame implements GUINotification {
 
 	private static final long serialVersionUID = -3415056364125031900L;
 	private JLabel lblHeader;
@@ -220,11 +220,11 @@ public class FMFrame extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			model.data.add(new Kontakt(fldVorname.getText(),
+			model.add(new Kontakt(fldVorname.getText(),
 					fldNachname.getText()));
 
-			model.fireTableDataChanged();
 			updateCount();
+			updateGUI();
 		}
 
 	}
@@ -257,6 +257,7 @@ public class FMFrame extends JFrame {
 			
 			// Man koennte auch mit updateRow arbeiten...
 			model.fireTableDataChanged();
+			updateGUI();
 		}
 	}
 
@@ -271,11 +272,37 @@ public class FMFrame extends JFrame {
 			
 			model.remove(row);
 			updateCount();
+			updateGUI();
 		}
 	}
 	
 	private void updateCount()
 	{
 		fldAnzKontakte.setText(String.valueOf(model.getRowCount()));
+	}
+
+	@Override
+	public void updateGUI() {
+		updateCount();
+		
+		int row = table.getSelectedRow();
+		if(row == -1)
+		{
+			fldPos.setText("");
+			fldVorname.setText("");
+			fldNachname.setText("");
+			btnEdit.setEnabled(false);
+			btnDelete.setEnabled(false);
+		}
+		else
+		{
+			Kontakt k = model.getRow(row);
+			
+			fldPos.setText(String.valueOf(row));
+			fldVorname.setText(k.getVorname());
+			fldNachname.setText(k.getNachname());
+			btnEdit.setEnabled(true);
+			btnDelete.setEnabled(true);
+		}
 	}
 }

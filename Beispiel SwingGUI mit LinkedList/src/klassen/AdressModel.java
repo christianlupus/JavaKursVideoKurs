@@ -1,17 +1,24 @@
 package klassen;
 
-import java.security.InvalidParameterException;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import klassen.gui.GUINotification;
+
 public class AdressModel extends AbstractTableModel {
 	private static final long serialVersionUID = 4103677174051900966L;
 	private String[] columnNames = { "Pos", "Vorname", "Nachname" };
-	public List<Kontakt> data;
+	private List<Kontakt> data;
+	private GUINotification notifier = null;
 
 	public AdressModel(List<Kontakt> data) {
 		this.data = data;
+	}
+	
+	public void setNotifier(GUINotification notifier)
+	{
+		this.notifier = notifier;
 	}
 
 	public Class<?> getColumnClass(int columnIndex) {
@@ -50,6 +57,16 @@ public class AdressModel extends AbstractTableModel {
 		}
 	}
 
+	public void add(Kontakt k)
+	{
+		int num;
+		synchronized (data) {
+			data.add(k);
+			num = data.size();
+		}
+		fireTableRowsInserted(num-1, num-1);	
+	}
+	
 	public Kontakt getRow(int row)
 	{
 		return data.get(row);
@@ -107,6 +124,9 @@ public class AdressModel extends AbstractTableModel {
 			// Darf nicht passieren
 			assert(false);
 		}
+		
+		if(notifier != null)
+			notifier.updateGUI();
 	}
 
 }

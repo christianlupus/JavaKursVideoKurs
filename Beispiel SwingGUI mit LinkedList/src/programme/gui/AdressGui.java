@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JApplet;
-import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -40,7 +39,9 @@ public class AdressGui extends JApplet {
 					e.printStackTrace();
 				}
 				List<Kontakt> data = new LinkedList<Kontakt>();
-				JFrame frame = new FMFrame(new AdressModel(data));
+				AdressModel model = new AdressModel(data);
+				FMFrame frame = new FMFrame(model);
+				model.setNotifier(frame);
 				frame.setVisible(true);
 
 			}
