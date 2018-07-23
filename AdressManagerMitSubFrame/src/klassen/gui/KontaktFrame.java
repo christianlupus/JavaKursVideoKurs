@@ -356,6 +356,8 @@ public class KontaktFrame extends JFrame implements GUINotification {
 			fldNachname.setText(k.getNachname());
 			btnEdit.setEnabled(true);
 			btnDelete.setEnabled(true);
+			
+			model.fireTableRowsUpdated(row, row);
 		}
 	}
 }

@@ -20,7 +20,7 @@ import javax.swing.SwingConstants;
 import klassen.Kontakt;
 
 
-public class Detail  extends JFrame  implements GUINotification{
+public class Detail  extends JFrame {
 	private static final long serialVersionUID = -3853211640762160090L;
 	private JLabel lblHeader;
 	private JLabel lblPos;
@@ -33,10 +33,12 @@ public class Detail  extends JFrame  implements GUINotification{
 	private JPanel pnlLeft;
 	private JButton btnDetail;
 
+	private KontaktFrame frame;
 	private Kontakt kontact;
 
 	public Detail(KontaktFrame kontaktFrame, Kontakt k) {
 		kontact = k;
+		frame = kontaktFrame;
 		
 		setTitle("Adress Details");
 		createWidgets();
@@ -120,18 +122,12 @@ public class Detail  extends JFrame  implements GUINotification{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			updateGUI();
+			kontact.setVorname(fldVorname.getText().trim());
+			kontact.setNachname(fldNachname.getText().trim());
+			
+			frame.updateGUI();
 		}
 	}
-
-	
-	@Override
-	public void updateGUI() {
-		fldPos.setText("111");
-		fldVorname.setText("Max");
-		fldNachname.setText("Mustermann");
-	}
-
 
 
 }
