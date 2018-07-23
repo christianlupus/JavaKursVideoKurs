@@ -17,6 +17,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import klassen.Kontakt;
+
 
 public class Detail  extends JFrame  implements GUINotification{
 	private static final long serialVersionUID = -3853211640762160090L;
@@ -31,8 +33,11 @@ public class Detail  extends JFrame  implements GUINotification{
 	private JPanel pnlLeft;
 	private JButton btnDetail;
 
+	private Kontakt kontact;
 
-	public Detail(KontaktFrame kontaktFrame) {
+	public Detail(KontaktFrame kontaktFrame, Kontakt k) {
+		kontact = k;
+		
 		setTitle("Adress Details");
 		createWidgets();
 		setupInteractions();
@@ -41,7 +46,7 @@ public class Detail  extends JFrame  implements GUINotification{
 		setVisible(true);
 		setLocation(550, 300);
 		setSize(300, 300);
-
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	}
 	
 	private void setupInteractions() {
@@ -70,8 +75,8 @@ public class Detail  extends JFrame  implements GUINotification{
 		fldPos = new JTextField();
 		fldPos.setEnabled(false);
 
-		fldVorname = new JTextField();
-		fldNachname = new JTextField();
+		fldVorname = new JTextField(kontact.getVorname());
+		fldNachname = new JTextField(kontact.getNachname());
 
 		btnDetail = new JButton("Detail");
 		btnDetail.setEnabled(true);

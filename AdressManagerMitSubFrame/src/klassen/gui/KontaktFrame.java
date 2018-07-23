@@ -7,6 +7,8 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -96,6 +98,7 @@ public class KontaktFrame extends JFrame implements GUINotification {
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getSelectionModel().addListSelectionListener(
 				new MySelectionListener(table));
+		table.addMouseListener(new DoubleClickListener());
 	}
 
 	private void addWidgets() {
@@ -228,9 +231,42 @@ public class KontaktFrame extends JFrame implements GUINotification {
 	public class SubFrameAction implements ActionListener {
 
 		@Override
-		public void actionPerformed(ActionEvent e) {           
-			new Detail(KontaktFrame.this);
+		public void actionPerformed(ActionEvent e) {
+			int row = table.getSelectedRow();
+			assert(row != -1);
+			Kontakt k = model.getRow(row);
+			new Detail(KontaktFrame.this, k);
 		}
+	}
+	
+	private class DoubleClickListener implements MouseListener
+	{
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			if(e.getClickCount() != 2)
+				return;
+			
+			int row = table.getSelectedRow();
+			if(row == -1)
+				return;
+			
+			Kontakt k = model.getRow(row);
+			new Detail(KontaktFrame.this, k);
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {}
+
+		@Override
+		public void mouseExited(MouseEvent e) {}
+
+		@Override
+		public void mousePressed(MouseEvent e) {}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {}
+		
 	}
 	
 	private class AddKontaktAction implements ActionListener {

@@ -53,7 +53,7 @@ public class AdressModel extends AbstractTableModel {
 		if (col < 1) {
 			return false;
 		} else {
-			return true;
+			return false /*true*/;
 		}
 	}
 
