@@ -1,8 +1,6 @@
 package programme.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 
@@ -32,7 +30,6 @@ public class TestMainFrame extends JFrame   {
 
 	private static final long serialVersionUID = 8405615042523967994L;
 	private TableRowSorter<TableModel> sorter;
-	private JLabel lblFilterId,lblFilterVN,lblFilterNN;
     private JTextField filterId, filterVorname, filterNachname;
 	private JPanel pnlLineStart,pnlMiddle;
 	private JPanel pnlAdd,pnlFilter;
@@ -67,21 +64,15 @@ public class TestMainFrame extends JFrame   {
 		pnlAdd = new JPanel();
 		pnlAdd.setLayout(new GridLayout(0, 2, 5, 5));
 		
-		lblFilterId = new JLabel("(Filter(Id)");
-		lblFilterVN = new JLabel("(Filter(Vorname)");
-		lblFilterNN = new JLabel("(Filter(Nachname)");
-		
-		
 		filterId= new JTextField(20);
 		filterVorname=new JTextField(20);
 		filterNachname=new JTextField(20);
-
 		
 		table = new JTable(data, columnNames);
 		sorter = new TableRowSorter<TableModel>(table.getModel());
 		table.setRowSorter(sorter);
-		table.setTableHeader(new JXTableHeader(table.getColumnModel()));
-		tableHeader = table.getTableHeader();
+		tableHeader = new JXTableHeader(table.getColumnModel());
+		table.setTableHeader(tableHeader);
 
 		final TableCellRenderer defaultRenderer = tableHeader
 				.getDefaultRenderer();
@@ -89,9 +80,10 @@ public class TestMainFrame extends JFrame   {
 			((JLabel) defaultRenderer).setVerticalAlignment(SwingConstants.TOP);
 		}
 		tableHeader.setLayout(new TableHeaderSouthLayout());
-		for (int i = 0; i < table.getModel().getColumnCount(); i++) {
-			tableHeader.add(createTextField(i), Integer.valueOf(i));
-		}
+		
+		tableHeader.add(filterId, new Integer(0));
+		tableHeader.add(filterVorname, new Integer(1));
+		tableHeader.add(filterNachname, new Integer(2));
 		
 		scrollTable = new JScrollPane(table);
 				
@@ -105,25 +97,8 @@ public class TestMainFrame extends JFrame   {
 
 	private void addWidgets() {		
 		getContentPane().setLayout(new BorderLayout(5, 5));
-//		getContentPane().add(BorderLayout.PAGE_START, lblPageStart);
-		getContentPane().add(BorderLayout.LINE_START, pnlLineStart);
 		getContentPane().add(BorderLayout.CENTER, pnlMiddle);
-//		getContentPane().add(BorderLayout.LINE_END, lblLineEnd);
-//		getContentPane().add(BorderLayout.PAGE_END, lblPageEnd);
 
-		pnlAdd.add(lblFilterId);
-		pnlAdd.add(Box.createVerticalGlue());
-		pnlAdd.add(filterId);
-		pnlAdd.add(Box.createVerticalGlue());
-		pnlAdd.add(lblFilterVN);
-		pnlAdd.add(Box.createVerticalGlue());
-		pnlAdd.add(filterVorname);
-		pnlAdd.add(Box.createVerticalGlue());
-		pnlAdd.add(lblFilterNN);
-		pnlAdd.add(Box.createVerticalGlue());
-		pnlAdd.add(filterNachname);
-		pnlAdd.add(Box.createVerticalGlue());
-		
 		pnlAdd.setMaximumSize(pnlAdd.getPreferredSize());
 		pnlAdd.setAlignmentX(LEFT_ALIGNMENT);
 
@@ -135,7 +110,7 @@ public class TestMainFrame extends JFrame   {
 		pnlMiddle.add(scrollTable);
 		pnlMiddle.add(Box.createVerticalGlue());
 		
-		pnlMiddle.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
+//		pnlMiddle.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
 
 		
 	}		
@@ -167,7 +142,7 @@ public class TestMainFrame extends JFrame   {
 	}
 
 	private void newFilter() {
-		RowFilter rf = null;
+		RowFilter<Object, Object> rf = null; // Nicht ideal so allgemein zu formulieren. Ggf spezifizieren!
 		try {
 			ArrayList<RowFilter<Object, Object>> filters = new ArrayList<RowFilter<Object, Object>>(
 					3);
@@ -182,14 +157,6 @@ public class TestMainFrame extends JFrame   {
 		sorter.setRowFilter(rf);
 	}
 
-	private JTextField createTextField(int columnIndex) {
-		final JTextField tf = new JTextField();
-		tf.setCursor(Cursor.getDefaultCursor());
-		tf.setName(Integer.toString(columnIndex));
-		tf.setBackground(Color.YELLOW);
-		return tf;
-	}
-	
 
 	
 }
