@@ -45,7 +45,6 @@ public class TestMainFrame extends JFrame   {
 
 	public TestMainFrame() {
 		this.setTitle("JTable mit FilterComboBoxen im Header");
-		pack();
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -53,6 +52,7 @@ public class TestMainFrame extends JFrame   {
 		setupInteractions();
 		addWidgets();
 		
+		pack();
 		
 	}
 
